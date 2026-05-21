@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 
 export default function App() {
-  const [uf, setUf] = useState("");
+  const [uf, setUf] = useState("RS");
   const [cidade, setCidade] = useState("");
   const [bairro, setBairro] = useState("");
   const [rua, setRua] = useState("");
@@ -32,7 +32,6 @@ export default function App() {
       .replace(/\bgen\b/g, "general")
       .replace(/\bpres\b/g, "presidente")
       .replace(/\bmal\b/g, "marechal")
-      .replace(/\bpeq\b/g, "pequena")
       .replace(/\bsto\b/g, "santo")
       .replace(/\bsta\b/g, "santa")
       .replace(/\bjd\b/g, "jardim")
@@ -78,13 +77,17 @@ export default function App() {
 
       if (!cidade && !rua && !bairro) {
         throw new Error(
-          "Informe ao menos cidade, rua ou bairro."
+          "Informe ao menos cidade, bairro ou rua."
         );
       }
 
       const searchUF = uf || "RS";
-      const searchCidade = cidade || "Porto Alegre";
-      const searchRua = rua || bairro || "A";
+
+      const searchCidade =
+        cidade || "Porto Alegre";
+
+      const searchRua =
+        rua || bairro || "Centro";
 
       const url = `https://viacep.com.br/ws/${encodeURIComponent(
         searchUF
@@ -195,59 +198,62 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-100 via-zinc-200 to-zinc-100 p-4 md:p-8">
-
+    <div className="min-h-screen bg-[#0f172a] p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
 
-        <div className="bg-white/90 backdrop-blur rounded-[32px] shadow-2xl border border-zinc-200 p-6 md:p-8">
+        {/* HEADER */}
+
+        <div className="bg-[#111827] border border-zinc-800 rounded-3xl shadow-2xl p-6 md:p-8">
 
           <div className="mb-8">
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-zinc-900">
-              Busca Inteligente de CEP
+            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white">
+              Busca CEP
             </h1>
 
-            <p className="text-zinc-500 mt-3 text-lg">
-              Localize o CEP
+            <p className="text-zinc-400 mt-3 text-lg">
+              Localize CEPs rapidamente
             </p>
           </div>
+
+          {/* FORM */}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
 
             <Input
               label="UF"
               value={uf}
-              placeholder="UF"
+              placeholder="RS"
               maxLength={2}
-              onChange={(v) =>
-                setUf(v.toUpperCase())
+              onChange={(value) =>
+                setUf(value.toUpperCase())
               }
             />
 
             <Input
               label="Cidade"
               value={cidade}
-              placeholder="Cidade"
+              placeholder="Digite a cidade"
               onChange={setCidade}
             />
 
             <Input
               label="Bairro"
               value={bairro}
-              placeholder="Bairro"
+              placeholder="Digite o bairro"
               onChange={setBairro}
             />
 
             <Input
               label="Rua"
               value={rua}
-              placeholder="Endereço"
+              placeholder="Digite a rua"
               onChange={setRua}
             />
 
             <Input
               label="Número"
               value={numero}
-              placeholder="123"
+              placeholder="Digite o número"
               onChange={setNumero}
             />
           </div>
@@ -255,7 +261,7 @@ export default function App() {
           <button
             onClick={searchCEP}
             disabled={loading}
-            className="mt-6 h-14 px-8 rounded-2xl bg-black text-white font-semibold shadow-lg hover:scale-[1.02] hover:shadow-2xl active:scale-[0.99] transition-all duration-200 disabled:opacity-50"
+            className="mt-6 h-14 px-8 rounded-2xl bg-blue-600 text-white font-semibold hover:bg-blue-500 transition-all duration-200 shadow-lg shadow-blue-900/30 disabled:opacity-50"
           >
             {loading
               ? "Buscando..."
@@ -263,37 +269,40 @@ export default function App() {
           </button>
 
           {error && (
-            <div className="mt-6 bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-2xl">
+            <div className="mt-6 bg-red-500/10 border border-red-500/30 text-red-300 px-4 py-3 rounded-2xl">
               {error}
             </div>
           )}
         </div>
 
+        {/* LOADING */}
+
         {loading && (
-          <div className="bg-white rounded-[32px] shadow-2xl border border-zinc-200 p-10 text-center">
+          <div className="bg-[#111827] border border-zinc-800 rounded-3xl shadow-2xl p-10 text-center">
 
-            <div className="animate-spin h-14 w-14 rounded-full border-4 border-zinc-300 border-t-black mx-auto mb-4"></div>
+            <div className="animate-spin h-14 w-14 rounded-full border-4 border-zinc-700 border-t-blue-500 mx-auto mb-4"></div>
 
-            <p className="text-zinc-600 text-lg">
+            <p className="text-zinc-400 text-lg">
               Procurando CEPs...
             </p>
           </div>
         )}
 
+        {/* RESULTADOS */}
+
         {results.length > 0 && (
-          <div className="bg-white/90 backdrop-blur rounded-[32px] shadow-2xl border border-zinc-200 p-6">
+          <div className="bg-[#111827] border border-zinc-800 rounded-3xl shadow-2xl p-6">
 
-            <div className="mb-6 flex items-center justify-between">
+            <div className="mb-6">
 
-              <div>
-                <h2 className="text-3xl font-bold text-zinc-900">
-                  Resultados
-                </h2>
+              <h2 className="text-3xl font-bold text-white">
+                Resultados
+              </h2>
 
-                <p className="text-zinc-500 mt-1">
-                  {totalResults} CEP(s) encontrados
-                </p>
-              </div>
+              <p className="text-zinc-400 mt-1">
+                {totalResults} CEP(s)
+                encontrados
+              </p>
             </div>
 
             <div className="space-y-4">
@@ -308,8 +317,8 @@ export default function App() {
                     className={`border rounded-3xl p-5 cursor-pointer transition-all duration-200 ${
                       selected?.cep ===
                       item.cep
-                        ? "border-black bg-zinc-100 shadow-2xl scale-[1.01]"
-                        : "border-zinc-200 hover:border-black hover:shadow-xl bg-white"
+                        ? "border-blue-500 bg-blue-500/10 shadow-2xl"
+                        : "border-zinc-700 bg-[#1e293b] hover:border-blue-500 hover:bg-[#243244]"
                     }`}
                   >
 
@@ -319,41 +328,39 @@ export default function App() {
 
                         <div className="flex flex-wrap items-center gap-3">
 
-                          <span className="text-3xl font-black text-zinc-900">
+                          <span className="text-3xl font-black text-white">
                             {item.cep}
                           </span>
 
-                          <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
+                          <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-300 text-xs font-semibold">
                             CEP válido
                           </span>
                         </div>
 
-                        <p className="font-semibold text-zinc-800 text-lg">
+                        <p className="font-semibold text-zinc-200 text-lg">
                           {item.logradouro}
                         </p>
 
-                        <div className="flex flex-wrap gap-2 text-sm text-zinc-500">
+                        <p className="text-zinc-400">
+                          Bairro: {item.bairro || "-"}
+                        </p>
+
+                        <div className="flex flex-wrap gap-2 text-sm text-zinc-400">
 
                           <span>
-                            Bairro:{" "}
-                            {item.bairro ||
-                              "-"}
+                            {item.localidade}
                           </span>
 
                           <span>•</span>
 
                           <span>
-                            {
-                              item.localidade
-                            }{" "}
-                            / {item.uf}
+                            {item.uf}
                           </span>
 
                           <span>•</span>
 
                           <span>
-                            IBGE:{" "}
-                            {item.ibge}
+                            IBGE: {item.ibge}
                           </span>
                         </div>
                       </div>
@@ -361,31 +368,27 @@ export default function App() {
                       <div className="flex gap-3">
 
                         <button
-                          onClick={(
-                            e
-                          ) => {
+                          onClick={(e) => {
                             e.stopPropagation();
 
                             copyCEP(
                               item.cep
                             );
                           }}
-                          className="h-11 px-5 rounded-2xl border border-zinc-300 font-semibold hover:bg-zinc-100 transition"
+                          className="h-11 px-5 rounded-2xl border border-zinc-600 text-zinc-200 font-semibold hover:bg-zinc-700 transition"
                         >
                           Copiar
                         </button>
 
                         <button
-                          onClick={(
-                            e
-                          ) => {
+                          onClick={(e) => {
                             e.stopPropagation();
 
                             setSelected(
                               item
                             );
                           }}
-                          className="h-11 px-5 rounded-2xl bg-black text-white font-semibold hover:opacity-90 transition"
+                          className="h-11 px-5 rounded-2xl bg-blue-600 text-white font-semibold hover:bg-blue-500 transition"
                         >
                           Selecionar
                         </button>
@@ -398,10 +401,12 @@ export default function App() {
           </div>
         )}
 
-        {selected && (
-          <div className="bg-white/90 backdrop-blur rounded-[32px] shadow-2xl border border-zinc-200 p-6">
+        {/* SELECIONADO */}
 
-            <h2 className="text-3xl font-bold mb-6 text-zinc-900">
+        {selected && (
+          <div className="bg-[#111827] border border-zinc-800 rounded-3xl shadow-2xl p-6">
+
+            <h2 className="text-3xl font-bold mb-6 text-white">
               CEP Selecionado
             </h2>
 
@@ -460,7 +465,7 @@ function Input({
 }) {
   return (
     <div>
-      <label className="block text-sm font-semibold text-zinc-700 mb-2">
+      <label className="block text-sm font-semibold text-zinc-300 mb-2">
         {label}
       </label>
 
@@ -472,7 +477,7 @@ function Input({
           onChange(e.target.value)
         }
         placeholder={placeholder}
-        className="w-full h-14 px-5 rounded-2xl border border-zinc-200 bg-zinc-50 text-zinc-900 placeholder:text-zinc-400 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-black/10 focus:border-black hover:border-zinc-400"
+        className="w-full h-14 px-5 rounded-2xl border border-zinc-700 bg-[#1e293b] text-white placeholder:text-zinc-500 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500"
       />
     </div>
   );
@@ -483,12 +488,12 @@ function InfoCard({
   value,
 }) {
   return (
-    <div className="border border-zinc-200 rounded-3xl p-5 bg-zinc-50">
-      <p className="text-sm text-zinc-500 mb-1">
+    <div className="border border-zinc-700 rounded-3xl p-5 bg-[#1e293b]">
+      <p className="text-sm text-zinc-400 mb-1">
         {title}
       </p>
 
-      <p className="font-bold text-zinc-900 break-words text-lg">
+      <p className="font-bold text-white break-words text-lg">
         {value || "-"}
       </p>
     </div>
